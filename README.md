@@ -76,8 +76,8 @@ Other commands:
 ## Bugs found so far
 - The Great Hall's browser tab says only "Great Hall"; every other page says "… | Lords of Fjords"
   (`specs/smoke.spec.ts` checks only the start of the title for now).
-- Mead & Feast: Barowl's greeting ("every one has a seat for you") and the table dialog ("there's always one seat for a
-  guest") still say every table has a seat, but one or two tables are full each night.
+- ~~Mead & Feast: Barowl's greeting and the table dialog still promised a seat at every table, but one or two tables
+  are full each night.~~ Fixed in the tavern on 2026-11-23.
 
 ## Ideas for your own tests
 - Lady Owner's offer is kept for the rest of the saga: begin with 5 silver, get the Goat Stable offered, reload, is it

@@ -76,8 +76,8 @@ Other commands:
 - **Please keep runs gentle** when the tavern is shared: run the suite now and then, not in a tight loop.
 
 ## Bugs found so far
-- The Great Hall's browser tab says only "Great Hall"; every other page says "… | Lords of Fjords"
-  (`specs/smoke.spec.ts` checks only the start of the title for now).
+- ~~The Great Hall's browser tab said only "Great Hall"; every other page says "… | Lords of Fjords".~~ Fixed in the
+  tavern on 2026-11-23.
 - ~~Mead & Feast: Barowl's greeting and the table dialog still promised a seat at every table, but one or two tables
   are full each night.~~ Fixed in the tavern on 2026-11-23.
 

@@ -11,8 +11,7 @@ test("health endpoint reports ok @smoke", async ({ request }) => {
 
 test("the Great Hall opens with its painted scene and the demo notice @smoke", async ({ page }) => {
   await page.goto("/");
-  // Found 2026-11-23: the Great Hall's tab says only "Great Hall" (other pages: "… | Lords of Fjords"). Reported.
-  await expect(page).toHaveTitle(/^Great Hall/);
+  await expect(page).toHaveTitle("Great Hall | Lords of Fjords"); // was only "Great Hall" until 2026-11-23
   await expect(page.getByTestId("great-hall-scene")).toBeVisible();
   await expect(page.getByTestId("demo-banner")).toContainText("Nothing is real");
   // The left plank depends on the Viking's night (Select Room / Select Berth / Check Out); the portraits are always there.

@@ -18,3 +18,7 @@ export const ROOMS = {
 
 /** All regular rooms (1–16). */
 export const REGULAR_ROOMS = Array.from({ length: 16 }, (_, i) => i + 1);
+
+/** Every company that can come to Mead & Feast; five come each night, picked by the saga number. */
+export const COMPANIES = ["robin-hood", "lady", "mice", "french-guests", "pirates", "dragons", "druid"] as const;
+export const PLACES = 5;

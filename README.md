@@ -10,13 +10,14 @@ tavern.
 |---|---|
 | `specs/smoke.spec.ts` | Is the tavern alive? Health, the Great Hall, the top menu, 404, guests (tagged `@smoke`) |
 | `specs/great-hall.spec.ts` | Select Room, the windows, booking a room into the Loot Sack, the twist kept secret until the room is yours, one room per saga, Lady Owner turning away a thin pouch, paying |
+| `specs/feast.spec.ts` | Tonight's five companies (same saga, same companies), Select Table, full tables with another Viking on the guest chair, a room needed to dine, Join the table with the twist and the Mighty Viking in his seat, one table per saga, Go to Menu, Barowl's wink, guests |
 | `specs/harbor.spec.ts` | Select Berth, the berths, Moor here, the Kraken peeking up (same spot for the same saga), one berth per saga, "the Kraken has seen your ship", Select Parking from the Great Hall, Piermaid, the gates |
-| `src/pages/` | Page objects, one class per page (Great Hall, Drakkar Harbor, Loot Sack, Settle, the top menu) |
+| `src/pages/` | Page objects, one class per page (Great Hall, Drakkar Harbor, Mead & Feast, Loot Sack, Settle, the top menu) |
 | `src/tavern-api.ts` | Helper for the tavern's JSON API, used to prepare a night quickly |
 | `src/fixtures.ts` | Gives every test the page objects, and begins a fresh night first |
 | `src/auth.setup.ts` | Enters the hall once and saves the session for all tests |
 
-**Coming next:** Mead & Feast (tables, full tables), Morning Check Out (room,
+**Coming next:** Morning Check Out (room,
 harbor and table events, refunds and charges), the Master's Table and the API.
 
 ## The tavern's secret weapon for testers: sagas and the Master's Table
@@ -75,6 +76,8 @@ Other commands:
 ## Bugs found so far
 - The Great Hall's browser tab says only "Great Hall"; every other page says "… | Lords of Fjords"
   (`specs/smoke.spec.ts` checks only the start of the title for now).
+- Mead & Feast: Barowl's greeting ("every one has a seat for you") and the table dialog ("there's always one seat for a
+  guest") still say every table has a seat, but one or two tables are full each night.
 
 ## Ideas for your own tests
 - Lady Owner's offer is kept for the rest of the saga: begin with 5 silver, get the Goat Stable offered, reload, is it

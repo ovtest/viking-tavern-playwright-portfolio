@@ -1,6 +1,7 @@
 import { test as base } from "@playwright/test";
 import { FULL_POUCH, TEST_SAGA } from "./constants";
 import { GreatHallPage } from "./pages/great-hall-page";
+import { FeastPage } from "./pages/feast-page";
 import { HarborPage } from "./pages/harbor-page";
 import { LootSackPage, SettlePage } from "./pages/loot-sack-page";
 import { TavernApi } from "./tavern-api";
@@ -12,6 +13,7 @@ type Fixtures = {
   freshNight: void;
   greatHall: GreatHallPage;
   harbor: HarborPage;
+  feast: FeastPage;
   lootSack: LootSackPage;
   settlePage: SettlePage;
 };
@@ -31,6 +33,7 @@ export const test = base.extend<Fixtures>({
   ],
   greatHall: async ({ page }, use) => use(new GreatHallPage(page)),
   harbor: async ({ page }, use) => use(new HarborPage(page)),
+  feast: async ({ page }, use) => use(new FeastPage(page)),
   lootSack: async ({ page }, use) => use(new LootSackPage(page)),
   settlePage: async ({ page }, use) => use(new SettlePage(page)),
 });

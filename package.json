@@ -1,0 +1,19 @@
+{
+  "name": "lords-of-fjords-tests",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sample Playwright test suite for Lords of Fjords, a Viking tavern built for practising testing.",
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.1",
+    "@types/node": "^22.20.5",
+    "typescript": "^5.9.3"
+  }
+}

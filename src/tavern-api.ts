@@ -7,7 +7,7 @@ export type ApiError = { code: string; message: string; offeredRoomId?: number }
 
 export type RoomState = "available" | "occupied" | "in-sack" | "booked" | "closed";
 export type Room = { id: number; name: string; where: string; teaser: string; price: number; state: RoomState; twist?: string };
-export type Berth = { id: number; name: string; island: string; boat: string; price: number; state: "available" | "occupied" | "in-sack" | "booked" };
+export type Berth = { id: number; name: string; where: string; island: string; boat: string; boatName: string; teaser: string; price: number; state: "available" | "occupied" | "in-sack" | "booked" };
 export type Table = { company: string; place: number; name: string; state: "available" | "full" | "mine"; twist?: string };
 export type SackLine = { kind: "room" | "berth"; id: number; name: string; price: number; quantity: number; lineTotal: number };
 export type Sack = { sagaSeed: number; lines: SackLine[]; itemCount: number; total: number };

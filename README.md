@@ -10,12 +10,13 @@ tavern.
 |---|---|
 | `specs/smoke.spec.ts` | Is the tavern alive? Health, the Great Hall, the top menu, 404, guests (tagged `@smoke`) |
 | `specs/great-hall.spec.ts` | Select Room, the windows, booking a room into the Loot Sack, the twist kept secret until the room is yours, one room per saga, Lady Owner turning away a thin pouch, paying |
-| `src/pages/` | Page objects, one class per page (Great Hall, Loot Sack, Settle, the top menu) |
+| `specs/harbor.spec.ts` | Select Berth, the berths, Moor here, the Kraken peeking up (same spot for the same saga), one berth per saga, "the Kraken has seen your ship", Select Parking from the Great Hall, Piermaid, the gates |
+| `src/pages/` | Page objects, one class per page (Great Hall, Drakkar Harbor, Loot Sack, Settle, the top menu) |
 | `src/tavern-api.ts` | Helper for the tavern's JSON API, used to prepare a night quickly |
 | `src/fixtures.ts` | Gives every test the page objects, and begins a fresh night first |
 | `src/auth.setup.ts` | Enters the hall once and saves the session for all tests |
 
-**Coming next:** the Drakkar Harbor (berths, the Kraken), Mead & Feast (tables, full tables), Morning Check Out (room,
+**Coming next:** Mead & Feast (tables, full tables), Morning Check Out (room,
 harbor and table events, refunds and charges), the Master's Table and the API.
 
 ## The tavern's secret weapon for testers: sagas and the Master's Table
@@ -60,6 +61,9 @@ Other commands:
   the same Viking while the tests run.
 - **The scenes animate.** After Select Room (or Select Berth, Select Table) the keeper checks the windows one by one.
   Don't sleep: wait for the scene's `data-revealed="true"` (see `GreatHallPage.revealRooms`).
+- **Some things never stop moving.** Piermaid sways, Barowl's lantern flickers. Playwright waits for an element to hold
+  still before hovering or clicking it, so it would wait forever. The tavern honours the "reduce motion" setting, which
+  stops them: `test.use({ reducedMotion: "reduce" })` (see `specs/harbor.spec.ts`).
 - **Previous pages stay in the page, hidden.** When you move between pages inside the tavern, the page you came from
   is kept hidden in the HTML. A locator such as `getByTestId("page-title")` can then match two elements; prefer role
   locators or add `.filter({ visible: true })`.

@@ -12,13 +12,15 @@ tavern.
 | `specs/great-hall.spec.ts` | Select Room, the windows, booking a room into the Loot Sack, the twist kept secret until the room is yours, one room per saga, Lady Owner turning away a thin pouch, paying |
 | `specs/feast.spec.ts` | Tonight's five companies (same saga, same companies), Select Table, full tables with another Viking on the guest chair, a room needed to dine, Join the table with the twist and the Mighty Viking in his seat, one table per saga, Go to Menu, Barowl's wink, guests |
 | `specs/check-out.spec.ts` | Morning Check Out with every event forced by the Master's Table: room events and their refunds, the Kraken eating or damaging your boat, the pirates' boat swap (refund or their wreck), table events with Lady Owner's charges shown in red, Robin Hood's 59 / 60 silver rule, the order of the cards, the saga closing, the Ledger, a new day at the next login |
+| `specs/master-table.spec.ts` | The Master's Table page (forcing every part of the night, the top menu showing it, refused values, guests) and the same from `POST /api/saga/new`, old scenario names included |
+| `specs/api.spec.ts` | The JSON API's rules and error codes: Viking names (only names that must be refused, so no account is created), guests looking at any saga, login needed, the Loot Sack, settling (changed sack, not enough silver), the Coin Pouch, the Ledger, `/api/me`. Together with the other specs, every error code except `TAVERN_FULL` is checked |
 | `specs/harbor.spec.ts` | Select Berth, the berths, Moor here, the Kraken peeking up (same spot for the same saga), one berth per saga, "the Kraken has seen your ship", Select Parking from the Great Hall, Piermaid, the gates |
-| `src/pages/` | Page objects, one class per page (Great Hall, Drakkar Harbor, Mead & Feast, Morning Check Out, Loot Sack, Settle, the top menu) |
+| `src/pages/` | Page objects, one class per page (Great Hall, Drakkar Harbor, Mead & Feast, Morning Check Out, Master's Table, Loot Sack, Settle, the top menu) |
 | `src/tavern-api.ts` | Helper for the tavern's JSON API, used to prepare a night quickly |
 | `src/fixtures.ts` | Gives every test the page objects, and begins a fresh night first |
 | `src/auth.setup.ts` | Enters the hall once and saves the session for all tests |
 
-**Coming next:** the Master's Table page itself, and an API spec (every error code).
+**108 tests** in all. Not covered yet: the menu (not built), `TAVERN_FULL` (it needs 50 Vikings), phones and keyboard-only use (see the ideas below).
 
 ## The tavern's secret weapon for testers: sagas and the Master's Table
 Everything random in the tavern comes from the **saga number** (shown in the top menu as `Saga #4217`). The same number

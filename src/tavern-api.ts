@@ -11,7 +11,7 @@ export type Berth = { id: number; name: string; where: string; island: string; b
 export type Table = { company: string; place: number; name: string; who: string; teaser: string; story: string; state: "available" | "full" | "mine"; twist?: string };
 export type SackLine = { kind: "room" | "berth"; id: number; name: string; price: number; quantity: number; lineTotal: number };
 export type Sack = { sagaSeed: number; lines: SackLine[]; itemCount: number; total: number };
-export type MorningEvent = { code: string; kind: "room" | "berth" | "table"; id: number; refund: number; needsChoice: boolean; choice: string | null };
+export type MorningEvent = { code: string; kind: "room" | "berth" | "table"; id: number; company?: string; paid: number; refund: number; needsChoice: boolean; choice: string | null; title: string };
 export type Checkout = { sagaSeed: number; events: MorningEvent[]; refundTotal: number; chargeTotal: number; silverAfter: number };
 
 /**
@@ -113,6 +113,39 @@ export class TavernApi {
 
   async pouch() {
     return (await this.json<{ pouch: { silver: number; transactions: { type: string; amount: number }[] } }>(await this.request.get("/api/pouch"), "GET /api/pouch")).pouch;
+  }
+
+  /** Raw call: the pirates took your boat, "refund" or "boat" (their wreck). */
+  async chooseRaw(choice: string) {
+    return this.request.post("/api/checkout/choice", { data: { choice } });
+  }
+
+  async ledgerEntry(id: number) {
+    return (await this.json<{ entry: { id: number; sagaSeed: number; sagaRun: number; total: number } }>(await this.request.get(`/api/ledger/${id}`), `GET /api/ledger/${id}`)).entry;
+  }
+
+  /**
+   * Sets up a whole night and pays it: a room, and if asked a berth (the cheapest free one) and a table (the first
+   * company with a seat, or the one named). Returns what was booked, with the prices paid.
+   */
+  async night(plan: { room: number; berth?: boolean; table?: boolean | string }) {
+    const room = await this.room(plan.room);
+    expect(room.state, `room ${plan.room} is free tonight`).toBe("available");
+    expect((await this.addRoom(room.id)).status(), `room ${room.id}`).toBe(200);
+    let berth: Berth | undefined;
+    if (plan.berth) {
+      berth = (await this.berths()).filter((b) => b.state === "available").sort((a, b) => a.price - b.price)[0];
+      expect((await this.addBerth(berth.id)).status(), `berth ${berth.id}`).toBe(200);
+    }
+    let table: Table | undefined;
+    if (plan.table) {
+      const tables = await this.tables();
+      table = typeof plan.table === "string" ? tables.find((t) => t.company === plan.table) : tables.find((t) => t.state === "available");
+      expect(table, `table ${plan.table} tonight`).toBeDefined();
+      expect((await this.joinTable(table!.company)).status(), `join ${table!.company}`).toBe(200);
+    }
+    const entry = await this.settle();
+    return { room, berth, table, entry };
   }
 
   /** Books a room (and pays it): the shortest way to a Viking with a room tonight. */

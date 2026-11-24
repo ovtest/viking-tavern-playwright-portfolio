@@ -10,6 +10,7 @@ test.describe("the Master's Table page", () => {
     const master = new MasterPage(page);
     await master.goto();
     await expect(master.currentSeed).toHaveText(`#${TEST_SAGA}`);
+    await expect(master.seed, "the saga number starts as yours, to replay the night").toHaveValue(String(TEST_SAGA));
     await expect(master.currentScenario).toHaveText("an ordinary night");
     await expect(master.currentSilver).toHaveText(String(FULL_POUCH));
     await expect(master.option("places", "free")).toBeChecked();
@@ -28,6 +29,14 @@ test.describe("the Master's Table page", () => {
     await expect(feast.header.silver).toHaveText("80 silver");
     // The pirates setting brings the pirates to Mead & Feast tonight.
     expect((await api.tables()).some((t) => t.company === "pirates")).toBe(true);
+  });
+
+  test("leaving the saga number as it is replays the same night with new settings", async ({ api, page }) => {
+    const master = new MasterPage(page);
+    await master.goto();
+    await master.beginSaga({ rooms: "always" });
+    expect((await api.me()).sagaSeed).toBe(TEST_SAGA);
+    await expect(master.header.saga).toHaveText(`Saga #${TEST_SAGA} · all free · rooms 100%`);
   });
 
   test("an ordinary New Saga ends the settings", async ({ api, page }) => {

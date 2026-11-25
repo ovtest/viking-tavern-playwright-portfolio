@@ -13,6 +13,8 @@ export class MenuPage {
   /** Why ordering is off: data-state "guest", "needs-table" or "closed". */
   readonly orderNote: Locator;
   readonly selectTable: Locator;
+  /** The way back, at the top: "Back to your table: <company>" (data-company) when seated, else "Back to the tables". */
+  readonly backTop: Locator;
 
   constructor(readonly page: Page) {
     this.header = new Header(page);
@@ -21,6 +23,7 @@ export class MenuPage {
     this.food = page.getByTestId("menu-food");
     this.orderNote = page.getByTestId("menu-order-note");
     this.selectTable = page.getByTestId("menu-order-select-table");
+    this.backTop = page.getByTestId("menu-back-top");
   }
 
   async goto() {

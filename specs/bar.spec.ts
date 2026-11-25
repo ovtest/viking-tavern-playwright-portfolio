@@ -20,6 +20,29 @@ test.describe("Barowl's Counter", () => {
     await menu.order("drink", "honey-mead", 2);
     await expect(menu.part("drink", "honey-mead", "message")).toContainText("2 × ");
     expect((await api.sack()).lines).toMatchObject([{ kind: "drink", id: "honey-mead", quantity: 2 }]);
+    // The way to pay is right under Barowl's answer.
+    await expect(menu.part("drink", "honey-mead", "sack")).toHaveAttribute("href", "/loot-sack");
+    await menu.part("drink", "honey-mead", "settle").click();
+    await expect(page).toHaveURL(/\/settle$/);
+    await expect(page.getByTestId("settle-items")).toContainText("Barowl's Honey Mead");
+  });
+
+  test("a drink the pouch can't pay for says so plainly, with the way to the Jarl's treasury", async ({ api, menu, page }) => {
+    await api.beginSaga({ seed: TEST_SAGA, silver: 1 });
+    await page.goto("/feast/bar");
+    await menu.order("drink", "honey-mead");
+    const error = menu.part("drink", "honey-mead", "error");
+    await expect(error).toHaveAttribute("data-error-code", "ORDER_TOO_EXPENSIVE");
+    await expect(error).toContainText("your Coin Pouch holds 1. You can't afford it this time.");
+    await expect(menu.part("drink", "honey-mead", "treasury")).toHaveAttribute("href", "/pouch");
+    expect((await api.sack()).lines, "nothing ordered").toHaveLength(0);
+
+    // Two of something: the price of both counts.
+    await api.beginSaga({ seed: TEST_SAGA, silver: 5 });
+    const res = await api.addMenuItem("drink", "honey-mead", 2);
+    expect(res.status()).toBe(400);
+    expect((await res.json()).error.code).toBe("ORDER_TOO_EXPENSIVE");
+    expect((await api.addMenuItem("drink", "honey-mead", 1)).status()).toBe(200);
   });
 
   test("Hungry? Without a table it's Select a table, which starts Barowl's check in the hall", async ({ feast, page }) => {

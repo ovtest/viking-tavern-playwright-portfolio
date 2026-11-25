@@ -90,6 +90,19 @@ test.describe("ordering", () => {
     expect((await api.addMenuItem("drink", "honey-mead")).status()).toBe(200);
   });
 
+  test("the way back is at the top: to your own table once you sit, to the tables before", async ({ api, menu, page }) => {
+    await menu.goto();
+    await expect(menu.backTop).toHaveText(/Back to the tables/);
+    await expect(menu.backTop).not.toHaveAttribute("data-company");
+    await sitDown(api);
+    const mine = (await api.tables()).find((t) => t.state === "mine")!;
+    await menu.goto();
+    await expect(menu.backTop).toHaveText(new RegExp(`Back to your table: ${mine.name}`));
+    await expect(menu.backTop).toHaveAttribute("data-company", mine.company);
+    await menu.backTop.click();
+    await expect(page).toHaveURL(/\/feast$/);
+  });
+
   test("at a table: order with − / +, the Loot Sack counts every mug, and it's paid with the room", async ({ api, menu, lootSack, settlePage, page }) => {
     const room = await sitDown(api);
     const { drinks, dishes } = await api.menu();

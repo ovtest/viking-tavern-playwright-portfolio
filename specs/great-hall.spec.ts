@@ -101,23 +101,24 @@ test.describe("booking a room", () => {
     await expect(page).toHaveURL(/\/$/);
   });
 
-  test("one room per saga: other rooms say so up front, and the API refuses a second one", async ({ api, greatHall }) => {
+  test("one room per saga: once a room is in the Loot Sack the free windows go quiet, and the API refuses a second one", async ({ api, greatHall }) => {
     const [first, second] = (await api.rooms()).filter((r) => r.state === "available" && r.id >= 1 && r.id <= 16);
     expect((await api.addRoom(first.id)).status()).toBe(200);
 
     await greatHall.goto();
-    await greatHall.openRoom(second.id); // with a room already chosen, the windows are lit at once
-    await expect(greatHall.dialog.hasRoom).toHaveAttribute("data-state", "in-sack");
-    await expect(greatHall.dialog.hasRoom).toContainText(first.name);
-    await expect(greatHall.dialog.confirm).toHaveCount(0);
-    await expect(greatHall.dialog.openSack).toBeVisible();
+    await expect(greatHall.room(first.id)).toHaveAttribute("data-look", "mine");
+    // The other free rooms are plain painted windows now: still free (data-state), but not lit and not clickable.
+    await expect(greatHall.room(second.id)).toHaveAttribute("data-look", "rest");
+    await expect(greatHall.room(second.id)).toHaveAttribute("data-state", "available");
+    await expect(greatHall.room(second.id)).toBeDisabled();
+    await expect(greatHall.selectRoom).toHaveCount(0);
 
     const res = await api.addRoom(second.id);
     expect(res.status()).toBe(409);
     expect((await errorOf(res)).code).toBe("ROOM_ALREADY_CHOSEN");
   });
 
-  test("taking the room out of the Loot Sack frees it again", async ({ api, greatHall, lootSack }) => {
+  test("taking the room out of the Loot Sack frees it again, and Select Room comes back", async ({ api, greatHall, lootSack }) => {
     const room = await freeRoom(api);
     await api.addRoom(room.id);
 
@@ -127,8 +128,10 @@ test.describe("booking a room", () => {
     await expect(lootSack.empty).toBeVisible();
 
     await greatHall.goto();
+    await expect(greatHall.selectRoom).toBeVisible();
     await greatHall.revealRooms();
     await expect(greatHall.room(room.id)).toHaveAttribute("data-state", "available");
+    await expect(greatHall.room(room.id)).toHaveAttribute("data-look", "available");
   });
 
   test("settling pays the room: the window turns booked and the left plank becomes Check Out", async ({ api, greatHall, lootSack, settlePage, page }) => {

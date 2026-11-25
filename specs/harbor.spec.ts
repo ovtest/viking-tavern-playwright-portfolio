@@ -148,6 +148,26 @@ test.describe("mooring", () => {
   });
 });
 
+test.describe("a pouch too thin for a berth", () => {
+  test("the dialog says so plainly and points to the Jarl's treasury; the API refuses", async ({ api, harbor, page }) => {
+    await api.beginSaga({ seed: TEST_SAGA, places: "free", silver: 1 });
+    const [berth] = await freeBerths(api);
+    await harbor.goto();
+    await harbor.revealBerths();
+    await harbor.openBerth(berth.id);
+    await expect(page.getByTestId("berth-dialog-cant-afford")).toHaveAttribute("data-berth-id", String(berth.id));
+    await expect(page.getByTestId("berth-dialog-cant-afford-text")).toContainText(`costs ${berth.price} silver, and your Coin Pouch holds 1`);
+    await expect(harbor.dialog.confirm, "no Moor here").toHaveCount(0);
+    await page.getByTestId("berth-dialog-treasury").click();
+    await expect(page).toHaveURL(/\/pouch$/);
+
+    const res = await api.addBerth(berth.id);
+    expect(res.status()).toBe(400);
+    expect((await errorOf(res)).code).toBe("BERTH_TOO_EXPENSIVE");
+    expect((await api.sack()).lines, "nothing moored").toHaveLength(0);
+  });
+});
+
 test.describe("around the harbor", () => {
   // Piermaid's badge sways all the time, so Playwright would wait forever for it to hold still before hovering.
   // The tavern honours the "reduce motion" setting, which stops the sway: a real-world way to test moving things.

@@ -1,0 +1,76 @@
+# The bug form for Lords of Fjords. The tavern's "Report a bug" link opens it with the saga number and the page
+# already filled in (?template=bug.yml&saga=…&page=…; each field's `id` is what the link fills).
+name: Report a bug in the tavern
+description: Something in Lords of Fjords doesn't work as it should.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing the tavern, Mighty Viking! Lady Owner reads every report.
+        The **saga number** matters most: the same saga always gives the same night, so with it the bug can be replayed.
+        Please don't write your real name or any personal details here: this page is public.
+
+  - type: input
+    id: saga
+    attributes:
+      label: Saga number
+      description: Shown in the top menu as "Saga #1234". Filled in for you when you came from the tavern's link.
+      placeholder: "4217"
+    validations:
+      required: true
+
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: Where it happened. Filled in for you when you came from the tavern's link.
+      placeholder: /feast/menu
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: What you did, one step per line.
+      placeholder: |
+        1. Entered the hall as a Viking with 100 silver
+        2. Pressed Select Room and clicked window 4
+        3. Pressed Put in Loot Sack
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead
+      description: Error messages, odd words, anything stuck. You can paste or drop screenshots here.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Edge
+        - Firefox
+        - Safari
+        - Other (please say which in the description)
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      options:
+        - Computer
+        - Tablet
+        - Phone

@@ -1,5 +1,5 @@
-import { FULL_POUCH, ROOMS, TEST_SAGA } from "../src/constants";
-import { expect, test } from "../src/fixtures";
+import { FULL_POUCH, ROOMS, TEST_SAGA } from "@utils/constants";
+import { expect, test } from "@fixtures/fixtures";
 
 // Barowl's Counter (/feast/bar): Go to a Bar (Great Hall, Harbor) and Barowl's badge lead here. Drinks at the counter,
 // no seat needed; food is served at the tables. See the app's docs/SPEC.md, section 2.3, "Barowl's Counter".

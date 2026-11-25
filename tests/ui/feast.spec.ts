@@ -1,6 +1,6 @@
-import { COMPANIES, FULL_POUCH, PLACES, ROOMS, TEST_SAGA } from "../src/constants";
-import { expect, test } from "../src/fixtures";
-import { errorOf, type Table, type TavernApi } from "../src/tavern-api";
+import { COMPANIES, FULL_POUCH, PLACES, ROOMS, TEST_SAGA } from "@utils/constants";
+import { expect, test } from "@fixtures/fixtures";
+import { errorOf, type Table, type TavernApi } from "@utils/tavern-api";
 
 // Barowl's Mead & Feast: tonight's companies, Select Table, full tables, joining a company (free, one per saga, a
 // room needed), the Mighty Viking at your table, Go to Menu, Barowl. See the app's docs/SPEC.md, section 2.3.

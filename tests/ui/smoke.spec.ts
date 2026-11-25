@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { Header } from "../src/pages/header";
+import { Header } from "@pages/header";
 
 // Quick "is the tavern alive?" checks. They don't change any data, so they use plain Playwright (no fresh night).
 

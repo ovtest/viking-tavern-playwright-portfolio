@@ -1,12 +1,12 @@
 import { test as base } from "@playwright/test";
-import { FULL_POUCH, TEST_SAGA } from "./constants";
-import { GreatHallPage } from "./pages/great-hall-page";
-import { FeastPage } from "./pages/feast-page";
-import { HarborPage } from "./pages/harbor-page";
-import { MenuPage } from "./pages/menu-page";
-import { MorningPage } from "./pages/morning-page";
-import { LootSackPage, SettlePage } from "./pages/loot-sack-page";
-import { TavernApi } from "./tavern-api";
+import { FULL_POUCH, TEST_SAGA } from "@utils/constants";
+import { GreatHallPage } from "@pages/great-hall.page";
+import { FeastPage } from "@pages/feast.page";
+import { HarborPage } from "@pages/harbor.page";
+import { MenuPage } from "@pages/menu.page";
+import { MorningPage } from "@pages/morning.page";
+import { LootSackPage, SettlePage } from "@pages/loot-sack.page";
+import { TavernApi } from "@utils/tavern-api";
 
 type Fixtures = {
   /** The tavern's API, logged in as VIKING_NAME (shares cookies with the page). */

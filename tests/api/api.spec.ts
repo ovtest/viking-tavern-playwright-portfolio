@@ -1,7 +1,7 @@
 import { expect, test as plain, type APIResponse } from "@playwright/test";
-import { FULL_POUCH, ROOMS, TEST_SAGA } from "../src/constants";
-import { test } from "../src/fixtures";
-import { errorOf } from "../src/tavern-api";
+import { FULL_POUCH, ROOMS, TEST_SAGA } from "@utils/constants";
+import { test } from "@fixtures/fixtures";
+import { errorOf } from "@utils/tavern-api";
 
 // The tavern's JSON API: the rules and error codes not already checked by the other specs.
 // Errors always come as { error: { code, message } }. See the app's docs/SPEC.md, section 2.5.

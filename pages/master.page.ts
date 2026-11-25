@@ -1,6 +1,6 @@
 import { type Locator, type Page } from "@playwright/test";
 import { Header } from "./header";
-import type { Night } from "../tavern-api";
+import type { Night } from "@utils/tavern-api";
 
 /**
  * The Master's Table (/master): a testing aid, reached only by typing the address. Begins a saga with a chosen number

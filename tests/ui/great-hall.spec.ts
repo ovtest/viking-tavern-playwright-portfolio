@@ -1,6 +1,6 @@
-import { FULL_POUCH, REGULAR_ROOMS, ROOMS, TEST_SAGA } from "../src/constants";
-import { expect, test } from "../src/fixtures";
-import { errorOf, type Room, type TavernApi } from "../src/tavern-api";
+import { FULL_POUCH, REGULAR_ROOMS, ROOMS, TEST_SAGA } from "@utils/constants";
+import { expect, test } from "@fixtures/fixtures";
+import { errorOf, type Room, type TavernApi } from "@utils/tavern-api";
 
 // The Great Hall: Select Room, the windows, booking a room into the Loot Sack, one room per saga,
 // Lady Owner turning away a thin pouch, and paying. See the app's docs/SPEC.md, sections 2.1 and 2.5.

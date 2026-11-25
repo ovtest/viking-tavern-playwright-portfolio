@@ -1,6 +1,6 @@
-import { FULL_POUCH, TEST_SAGA } from "../src/constants";
-import { expect, test } from "../src/fixtures";
-import { errorOf, type Berth, type TavernApi } from "../src/tavern-api";
+import { FULL_POUCH, TEST_SAGA } from "@utils/constants";
+import { expect, test } from "@fixtures/fixtures";
+import { errorOf, type Berth, type TavernApi } from "@utils/tavern-api";
 
 // The Drakkar Harbor: Select Berth, the berths, mooring into the Loot Sack, the Kraken peeking up, one berth per
 // saga, "the Kraken has seen your ship", and the ways in and out. See the app's docs/SPEC.md, section 2.2.

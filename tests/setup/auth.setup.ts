@@ -1,5 +1,5 @@
 import { expect, test as setup } from "@playwright/test";
-import { AUTH_FILE } from "./constants";
+import { AUTH_FILE } from "@utils/constants";
 
 // Runs once before the tests: enters the hall as VIKING_NAME through the API and saves the session cookie,
 // so every test starts logged in without going through the Enter the Hall page.

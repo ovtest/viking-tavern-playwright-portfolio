@@ -22,7 +22,7 @@ export class GreatHallPage {
   readonly dialog: RoomDialog;
   readonly reveal: RoomReveal;
 
-  constructor(private readonly page: Page) {
+  constructor(readonly page: Page) {
     this.header = new Header(page);
     this.scene = page.getByTestId("great-hall-scene");
     this.selectRoom = page.getByTestId("select-room");

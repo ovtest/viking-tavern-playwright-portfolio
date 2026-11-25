@@ -248,6 +248,32 @@ test.describe("one night, every event", () => {
   });
 });
 
+test.describe("the Saga of the night", () => {
+  test("a really bad night earns a title: robbed by Robin Hood and the boat gone with the pirates", async ({ api, morning, page }) => {
+    await nightWithCompany(api, "robin-hood", { rooms: "never", harbor: "pirates", tables: "always" });
+    await api.night({ room: QUIET_ROOM, berth: true, table: "robin-hood" });
+    await morning.goto();
+    await morning.checkOut.click();
+    await morning.card.takeRefund.click();
+    await morning.next.click();
+    await morning.next.click();
+
+    const epithet = page.getByTestId("morning-epithet");
+    await expect(epithet).toHaveAttribute("data-epithet", "the Robbed and Boatless");
+    await expect(epithet).toContainText(new RegExp(`${process.env.VIKING_NAME} the Robbed and Boatless`, "i"));
+    expect((await (await page.request.get("/api/checkout")).json()).checkout.epithet).toBe("the Robbed and Boatless");
+  });
+
+  test("one event is just a night, not a saga", async ({ api, page }) => {
+    await freeNight(api, { rooms: "always", harbor: "quiet", tables: "never" });
+    await api.night({ room: 1 });
+    expect((await api.checkOut()).epithet).toBeNull();
+    await page.goto("/morning");
+    await page.getByTestId("morning-next").click();
+    await expect(page.getByTestId("morning-epithet")).toHaveCount(0);
+  });
+});
+
 test.describe("after Check Out", () => {
   test("the saga is closed: nothing more can be booked, and checking out again is refused", async ({ api, morning }) => {
     await freeNight(api, quiet);

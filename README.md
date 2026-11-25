@@ -11,6 +11,8 @@ tavern.
 | `specs/smoke.spec.ts` | Is the tavern alive? Health, the Great Hall, the top menu, 404, guests (tagged `@smoke`) |
 | `specs/great-hall.spec.ts` | Select Room, the windows, booking a room into the Loot Sack, the twist kept secret until the room is yours, one room per saga, Lady Owner turning away a thin pouch, paying |
 | `specs/feast.spec.ts` | Tonight's five companies (same saga, same companies), Select Table, full tables with another Viking on the guest chair, a room needed to dine, Join the table with the twist and the Mighty Viking in his seat, one table per saga, Go to Menu, Barowl's wink, guests |
+| `specs/bar.spec.ts` | Barowl's Counter: Go to a Bar leads there, drinks without a room or table, Hungry? (Select a table or Go to Menu), the stand-in for Sir's picture, closed after Check Out, guests |
+| `specs/menu.spec.ts` | Barowl's Menu: drinks and dishes as the API lists them (never wine), a dish page with Jump to recipe, the story and the recipe, Lost at Sea for an unknown dish, ordering only at a table (guests, no table, after Check Out), − / + and the Loot Sack counting every mug, paying with the room, 1–10 of the same, refused ids and quantities |
 | `specs/check-out.spec.ts` | Morning Check Out with every event forced by the Master's Table: room events and their refunds, the Kraken eating or damaging your boat, the pirates' boat swap (refund or their wreck), table events with Lady Owner's charges shown in red, Robin Hood's 59 / 60 silver rule, the order of the cards, the saga closing, the Ledger, a new day at the next login |
 | `specs/master-table.spec.ts` | The Master's Table page (forcing every part of the night, the top menu showing it, refused values, guests) and the same from `POST /api/saga/new`, old scenario names included |
 | `specs/api.spec.ts` | The JSON API's rules and error codes: Viking names (only names that must be refused, so no account is created), guests looking at any saga, login needed, the Loot Sack, settling (changed sack, not enough silver), the Coin Pouch, the Ledger, `/api/me`. Together with the other specs, every error code except `TAVERN_FULL` is checked |
@@ -80,6 +82,27 @@ Other commands:
   tavern on 2026-11-23.
 - ~~Mead & Feast: Barowl's greeting and the table dialog still promised a seat at every table, but one or two tables
   are full each night.~~ Fixed in the tavern on 2026-11-23.
+- ~~Settle with the Innkeeper named a berth "Room 4: …" instead of "Berth 4: …".~~ Found while building the menu;
+  fixed in the tavern on 2026-11-23. (No test had looked at a berth's name on the Settle page.)
+- ~~After Lady Owner offered the Kitchen, its Put in Loot Sack said "Booking…" and stayed off.~~ Found by Lady Owner
+  by hand; asking her and booking shared one busy flag. Fixed on 2026-11-24, with a test for the whole path.
+- ~~The goat by the Goat Stable looked bald.~~ Sir painted a woolly one, and it took the bald goat's place in the Great
+  Hall on 2026-11-24 (a known issue for about an hour).
+
+## Known issues (found, and left as they are for now)
+Real bugs, but not worth fixing yet. A test that runs into one should know it's expected.
+- **Settle for the free Kitchen says "Pay from the Coin Pouch"** (2026-11-24): with only the Kitchen Fellowship in the
+  Loot Sack the bill is 0 silver, yet the button still talks about paying from the pouch. Paying works; only the words
+  are odd. (`settle-pay` on `/settle`.)
+
+## Open observations (need more testing before a fix is suggested)
+- **Readability, laptop vs phone (2026-11-23):** a tester with poor vision reads the tavern more easily on a phone
+  than on a laptop; the phone's brightness seems to help a lot. Is that a real concern for the laptop fonts? To check
+  with more testers and screens: font sizes, contrast of the painted signs and story text, and the page at 200% browser
+  zoom (nothing important cut off or hidden).
+- **Phone, held sideways (2026-11-23):** Mead & Feast works well; the companies' stories open with a tap on the table,
+  which is fine on a phone. Held upright the hall is small, but people scroll or turn the phone by themselves, so no
+  "turn your phone" message for now.
 
 ## Ideas for your own tests
 - Lady Owner's offer is kept for the rest of the saga: begin with 5 silver, get the Goat Stable offered, reload, is it

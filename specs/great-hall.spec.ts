@@ -154,17 +154,53 @@ test.describe("booking a room", () => {
 
 test.describe("turned away at the door", () => {
   // With every regular room free, a pouch of 5 silver can't pay for any of them (they cost 8 or more).
-  test("a thin pouch is offered the Goat Stable, which then lights up", async ({ api, greatHall }) => {
+  test("a room the pouch can't pay for says so plainly, and Lady Owner offers the Goat Stable", async ({ api, greatHall, page }) => {
     await api.beginSaga({ seed: TEST_SAGA, places: "free", silver: 5 });
     await greatHall.goto();
     await greatHall.revealRooms();
     await greatHall.openRoom(ROOMS.jarl);
-    await greatHall.dialog.confirm.click();
 
+    // No room story and no Put in Loot Sack: just the plain fact, and Lady Owner's answer at once.
+    await expect(page.getByTestId("room-dialog-cant-afford")).toHaveAttribute("data-room-id", String(ROOMS.jarl));
+    await expect(page.getByTestId("room-dialog-cant-afford-text")).toContainText("your Coin Pouch holds 5. You can't afford it this time.");
+    await expect(page.getByTestId("room-dialog-teaser")).toHaveCount(0);
+    await expect(greatHall.dialog.confirm).toHaveCount(0);
     await expect(greatHall.dialog.error).toHaveAttribute("data-error-code", "ROOM_TOO_EXPENSIVE");
     await expect(greatHall.dialog.error).toHaveAttribute("data-offered-room-id", String(ROOMS.goatStable));
-    await greatHall.dialog.cancel.click();
+    // She shows the window to look for, and its window lights up in the hall behind the dialog.
+    await expect(page.getByTestId("room-dialog-offer")).toHaveAttribute("data-room-id", String(ROOMS.goatStable));
+    await expect(page.getByTestId("room-dialog-offer-text")).toContainText("Goat Stable, number 17");
     await expect(greatHall.room(ROOMS.goatStable)).toHaveAttribute("data-state", "available");
+
+    // Show me the Goat Stable: its own dialog, ready to book.
+    await page.getByTestId("room-dialog-offer-open").click();
+    await expect(greatHall.dialog.title).toContainText("Goat Stable");
+    await expect(greatHall.dialog.confirm).toBeEnabled();
+  });
+
+  test("Show me the Kitchen Fellowship, then Put in Loot Sack: booked at once, for free", async ({ api, greatHall, page }) => {
+    // Bug found by Lady Owner (2026-11-24): the Kitchen's button said "Booking…" and stayed off.
+    await api.beginSaga({ seed: TEST_SAGA, places: "free", silver: 1 });
+    await greatHall.goto();
+    await greatHall.revealRooms();
+    await greatHall.openRoom(ROOMS.jarl);
+    await page.getByTestId("room-dialog-offer-open").click();
+    await expect(greatHall.dialog.title).toContainText("Kitchen Fellowship — free");
+    await expect(greatHall.dialog.confirm).toHaveText("Put in Loot Sack");
+    await expect(greatHall.dialog.confirm).toBeEnabled();
+    await greatHall.dialog.confirm.click();
+    await expect(page.getByTestId("room-reveal")).toBeVisible();
+    expect((await api.sack()).lines).toMatchObject([{ kind: "room", id: ROOMS.kitchen, price: 0 }]);
+  });
+
+  test("a pouch with enough for a cheaper room only hears that there are cheaper rooms", async ({ api, greatHall, page }) => {
+    await api.beginSaga({ seed: TEST_SAGA, places: "free", silver: 30 });
+    await greatHall.goto();
+    await greatHall.revealRooms();
+    await greatHall.openRoom(ROOMS.jarl);
+    await expect(greatHall.dialog.error).toContainText("cheaper rooms tonight");
+    await expect(greatHall.dialog.error).not.toHaveAttribute("data-offered-room-id");
+    await expect(page.getByTestId("room-dialog-offer-open")).toHaveCount(0);
   });
 
   test("a pouch too thin even for the Goat Stable is offered the Kitchen Fellowship, for free", async ({ api }) => {

@@ -95,12 +95,10 @@ test.describe("Select Table", () => {
     await expect(feast.toast).toContainText("Every seat in the hall is taken tonight");
   });
 
-  test("Go to a Bar in the Great Hall leads here and starts the check at once", async ({ api, greatHall, feast, page }) => {
-    await takeARoom(api);
-    await greatHall.goto();
-    await greatHall.goToBar.click();
+  test("arriving with ?select=1 (the counter's Select a table) starts the check at once", async ({ feast, page }) => {
+    await feast.goto("?select=1");
     await expect(feast.scene).toHaveAttribute("data-revealed", "true");
-    await expect(page).toHaveURL(/\/feast$/);
+    await expect(page, "the ?select=1 is dropped").toHaveURL(/\/feast$/);
   });
 });
 
@@ -188,7 +186,7 @@ test.describe("joining a table", () => {
     expect((await errorOf(unknown)).code).toBe("TABLE_NOT_FOUND");
   });
 
-  test("Go to Menu leads to Barowl's menu, still being written", async ({ api, feast, page }) => {
+  test("Go to Menu leads to Barowl's menu", async ({ api, feast, page }) => {
     await takeARoom(api);
     const [table] = await freeTables(api);
     await api.joinTable(table.company);
@@ -196,7 +194,8 @@ test.describe("joining a table", () => {
     await feast.goToMenu.click();
     await expect(page).toHaveURL(/\/feast\/menu$/);
     await expect(page.getByRole("heading", { name: "Barowl's Menu" })).toBeVisible();
-    await expect(page.getByTestId("coming-soon").filter({ visible: true })).toContainText("no wine, ever");
+    await expect(page.getByTestId("menu-intro")).toContainText("no wine, ever");
+    await expect(page.getByTestId("menu-order-note"), "sitting at a table, so the Viking may order").toHaveCount(0);
   });
 });
 
@@ -209,6 +208,13 @@ test.describe("Barowl", () => {
     await feast.barowl.hover();
     await expect(feast.tip).toContainText("Barowl");
     await expect(feast.barowlWink).toHaveCSS("opacity", "1"); // with reduced motion he winks and holds it
+    await expect(feast.tip).toContainText("my counter");
+  });
+
+  test("a click on Barowl takes you to his counter", async ({ feast, page }) => {
+    await feast.goto();
+    await feast.barowl.click();
+    await expect(page).toHaveURL(/\/feast\/bar$/);
   });
 });
 

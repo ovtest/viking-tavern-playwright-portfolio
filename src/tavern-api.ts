@@ -9,10 +9,16 @@ export type RoomState = "available" | "occupied" | "in-sack" | "booked" | "close
 export type Room = { id: number; name: string; where: string; teaser: string; price: number; state: RoomState; twist?: string };
 export type Berth = { id: number; name: string; where: string; island: string; boat: string; boatName: string; teaser: string; price: number; state: "available" | "occupied" | "in-sack" | "booked" };
 export type Table = { company: string; place: number; name: string; who: string; teaser: string; story: string; state: "available" | "full" | "mine"; twist?: string };
-export type SackLine = { kind: "room" | "berth"; id: number; name: string; price: number; quantity: number; lineTotal: number };
+/** id: a room or berth number, or a dish or drink id ("roast-bird"). */
+export type SackLine = { kind: "room" | "berth" | "dish" | "drink"; id: number | string; name: string; price: number; quantity: number; lineTotal: number };
+export type MenuKind = "dish" | "drink";
+export type Drink = { kind: "drink"; id: string; name: string; line: string; price: number; state: "available" };
+/** state: "sold-out" when the saga number took the dish off the menu tonight; soldOutReason is Barowl's excuse. */
+export type Dish = { kind: "dish"; id: string; name: string; line: string; price: number; picture: string | null; hasStory: boolean; state: "available" | "sold-out"; soldOutReason?: string };
+export type DishDetails = Dish & { story: string; ingredients: string[]; steps: string[] };
 export type Sack = { sagaSeed: number; lines: SackLine[]; itemCount: number; total: number };
 export type MorningEvent = { code: string; kind: "room" | "berth" | "table"; id: number; company?: string; paid: number; refund: number; needsChoice: boolean; choice: string | null; title: string };
-export type Checkout = { sagaSeed: number; events: MorningEvent[]; refundTotal: number; chargeTotal: number; silverAfter: number };
+export type Checkout = { sagaSeed: number; events: MorningEvent[]; refundTotal: number; chargeTotal: number; silverAfter: number; epithet: string | null };
 
 /**
  * Master's Table settings (the app's docs/SPEC.md, section 4). Leave out what should be ordinary.
@@ -78,7 +84,22 @@ export class TavernApi {
     return this.request.post("/api/loot-sack/items", { data: { kind: "berth", id } });
   }
 
-  async removeFromSack(kind: "room" | "berth", id: number) {
+  /** Raw call: a dish or a drink from Barowl's Menu; qty left out = 1. */
+  async addMenuItem(kind: MenuKind, id: string, qty?: number | string) {
+    return this.request.post("/api/loot-sack/items", { data: qty === undefined ? { kind, id } : { kind, id, qty } });
+  }
+
+  /** Barowl's Menu, no stories (anyone can read it). */
+  async menu() {
+    return this.json<{ sagaSeed: number; drinks: Drink[]; dishes: Dish[] }>(await this.request.get("/api/menu"), "GET /api/menu");
+  }
+
+  /** Raw call: one dish with its story and recipe. */
+  async dishRaw(id: string) {
+    return this.request.get(`/api/menu/${id}`);
+  }
+
+  async removeFromSack(kind: SackLine["kind"], id: number | string) {
     return this.request.delete(`/api/loot-sack/items/${kind}/${id}`);
   }
 

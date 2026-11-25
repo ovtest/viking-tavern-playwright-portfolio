@@ -41,6 +41,20 @@ test("the top menu leads to the Harbor, Mead & Feast and back to the Great Hall 
   }
 });
 
+test("Barowl's Menu opens with its drinks and food, and a dish page with its recipe @smoke", async ({ page }) => {
+  await page.goto("/feast/menu");
+  await expect(page.getByTestId("menu-drinks")).toBeVisible();
+  await expect(page.getByTestId("menu-food")).toBeVisible();
+  await page.getByTestId("menu-food").getByRole("link", { name: "Read the story" }).first().click();
+  await expect(page.getByTestId("dish-recipe")).toBeVisible();
+});
+
+test("Barowl's Counter opens with Barowl's greeting and the drinks @smoke", async ({ page }) => {
+  await page.goto("/feast/bar");
+  await expect(page.getByTestId("bar-greeting")).toBeVisible();
+  await expect(page.getByTestId("bar-drinks")).toBeVisible();
+});
+
 test("unknown pages answer 404 with the Lost at Sea page @smoke", async ({ page }) => {
   const res = await page.goto("/no-such-fjord");
   expect(res?.status()).toBe(404);

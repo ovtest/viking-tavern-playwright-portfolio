@@ -24,12 +24,14 @@ utils/     tavern-api.ts (the API client) and constants.ts
 | `tests/ui/smoke.spec.ts` | Is the tavern alive? Health, the Great Hall, the top menu, 404, guests (tagged `@smoke`) |
 | `tests/ui/great-hall.spec.ts` | Select Room, the windows, booking a room into the Loot Sack, the twist kept secret until the room is yours, one room per saga, Lady Owner turning away a thin pouch, paying |
 | `tests/ui/feast.spec.ts` | Tonight's five companies (same saga, same companies), Select Table, full tables with another Viking on the guest chair, a room needed to dine, Join the table with the twist and the Mighty Viking in his seat, one table per saga, Go to Menu, Barowl's wink, guests |
-| `tests/ui/bar.spec.ts` | Barowl's Counter: Go to a Bar leads there, drinks without a room or table, Hungry? (Select a table or Go to Menu), the stand-in for Sir's picture, closed after Check Out, guests |
+| `tests/ui/bar.spec.ts` | Barowl's Counter: Go to Bar leads there, drinks without a room or table, Hungry? (Select a table or Go to Menu), the stand-in for Sir's picture, closed after Check Out, guests |
 | `tests/ui/menu.spec.ts` | Barowl's Menu: drinks and dishes as the API lists them (never wine), a dish page with Jump to recipe, the story and the recipe, Lost at Sea for an unknown dish, ordering only at a table (guests, no table, after Check Out), − / + and the Loot Sack counting every mug, paying with the room, 1–10 of the same, refused ids and quantities |
 | `tests/ui/check-out.spec.ts` | Morning Check Out with every event forced by the Master's Table: room events and their refunds, the Kraken eating or damaging your boat, the pirates' boat swap (refund or their wreck), table events with Lady Owner's charges shown in red, Robin Hood's 59 / 60 silver rule, the order of the cards, the saga closing, the Ledger, a new day at the next login |
 | `tests/ui/master-table.spec.ts` | The Master's Table page (forcing every part of the night, the top menu showing it, refused values, guests) and the same from `POST /api/saga/new`, old scenario names included |
 | `tests/api/api.spec.ts` | The JSON API's rules and error codes: Viking names (only names that must be refused, so no account is created), guests looking at any saga, login needed, the Loot Sack, settling (changed sack, not enough silver), the Coin Pouch, the Ledger, `/api/me`. Together with the other specs, every error code except `TAVERN_FULL` is checked |
 | `tests/ui/auth.spec.ts` | Sail Away (log out): the hall turns back to a guest's and the server forgets the session. It logs in with its **own** session, never the shared one from `auth.setup.ts`, because logging out the shared session would make every later test fail |
+| `tests/ui/report-bug.spec.ts` | Report a bug: the footer link opens this repository's bug form with the saga number and page filled in (it only reads the link, never opens GitHub) |
+| `tests/ui/sagas.spec.ts` | The Sagas page: every saga has a title, a story and a teller, unique IDs, and no room numbers (Lady Owner's rule). The words aren't checked: she keeps adding sagas |
 | `tests/ui/harbor.spec.ts` | Select Berth, the berths, Moor here, the Kraken peeking up (same spot for the same saga), one berth per saga, "the Kraken has seen your ship", Select Parking from the Great Hall, Piermaid, the gates |
 | `pages/` | Page objects, one class per page (`*.page.ts`) (Great Hall, Drakkar Harbor, Mead & Feast, Morning Check Out, Master's Table, Loot Sack, Settle, the top menu) |
 | `utils/tavern-api.ts` | The API client: one method per API call (`api.addRoom(7)`, `api.settle()`), with the answers' types. Used to prepare a night quickly and by the API tests |
@@ -90,6 +92,11 @@ Other commands:
 - **The weekly cleanup sends all Vikings home** (Sunday 00:00 UTC). If the setup says it can't enter the hall, swear
   the oath again.
 - **Please keep runs gentle** when the tavern is shared: run the suite now and then, not in a tight loop.
+
+## Report a bug
+Found a bug in the tavern? Use **Report a bug** at the bottom of any page: it opens this repository's bug form
+with the saga number and the page filled in. Or open it directly: **Issues → New issue → Report a bug in the tavern**.
+Reports are public, so no real names, please.
 
 ## Bugs found so far
 - ~~The Great Hall's browser tab said only "Great Hall"; every other page says "… | Lords of Fjords".~~ Fixed in the

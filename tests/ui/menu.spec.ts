@@ -37,6 +37,20 @@ test.describe("reading the menu", () => {
     }
   });
 
+  test("tonight's story board stands beside the title, with its words written on the parchment", async ({ page }) => {
+    // Lady Owner writes the words (and will change them), so the test checks that they're there and on the board,
+    // not what they say.
+    await page.goto("/feast/menu");
+    const board = page.getByTestId("menu-story-board");
+    await expect(board).toBeVisible();
+    await expect(page.getByTestId("menu-story-title")).not.toBeEmpty();
+    await expect(page.getByTestId("menu-story-text")).not.toBeEmpty();
+    // The words sit inside the picture, not below it (a layout bug seen while building it).
+    const b = (await board.boundingBox())!;
+    const t = (await page.getByTestId("menu-story-text").boundingBox())!;
+    expect(t.y + t.height, "the story ends inside the board").toBeLessThan(b.y + b.height);
+  });
+
   test("a dish page: Jump to recipe, the story (or Barowl still remembering it), then the recipe", async ({ api, page }) => {
     const [first] = (await api.menu()).dishes;
     const dish = (await (await api.dishRaw(first.id)).json()).dish;

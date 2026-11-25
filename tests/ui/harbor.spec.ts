@@ -81,7 +81,7 @@ test.describe("mooring", () => {
     await expect(harbor.berth(berth.id)).toHaveAttribute("data-state", "in-sack");
     await expect(harbor.boat(berth.id)).toHaveAttribute("data-picture", "arrived");
     await expect(harbor.header.lootCount).toHaveText("1");
-    // With a berth, Select Berth is gone and Go to a Bar is the next step.
+    // With a berth, Select Berth is gone and Go to Bar is the next step.
     await expect(harbor.selectBerth).toHaveCount(0);
     await expect(harbor.goToBar).toBeVisible();
   });

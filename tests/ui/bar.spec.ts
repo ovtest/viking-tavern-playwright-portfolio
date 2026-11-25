@@ -1,11 +1,11 @@
 import { FULL_POUCH, ROOMS, TEST_SAGA } from "@utils/constants";
 import { expect, test } from "@fixtures/fixtures";
 
-// Barowl's Counter (/feast/bar): Go to a Bar (Great Hall, Harbor) and Barowl's badge lead here. Drinks at the counter,
+// Barowl's Counter (/feast/bar): Go to Bar (Great Hall, Harbor) and Barowl's badge lead here. Drinks at the counter,
 // no seat needed; food is served at the tables. See the app's docs/SPEC.md, section 2.3, "Barowl's Counter".
 
 test.describe("Barowl's Counter", () => {
-  test("Go to a Bar in the Great Hall leads to the counter", async ({ api, greatHall, page }) => {
+  test("Go to Bar in the Great Hall leads to the counter", async ({ api, greatHall, page }) => {
     const room = (await api.rooms()).find((r) => r.state === "available" && (ROOMS.quiet as readonly number[]).includes(r.id))!;
     await api.addRoom(room.id);
     await greatHall.goto();
@@ -64,10 +64,14 @@ test.describe("Barowl's Counter", () => {
     await expect(page).toHaveURL(/\/feast\/menu$/);
   });
 
-  test("until Sir paints Barowl at his counter, a stand-in says so", async ({ page }) => {
+  test("Sir's picture of Barowl at his counter is there, and it really loaded", async ({ page }) => {
+    // Until 2026-11-25 a stand-in said "Sir is still painting this one"; the picture moved here from the Menu.
     await page.goto("/feast/bar");
-    await expect(page.getByTestId("bar-picture")).toHaveAttribute("data-painted", "false");
-    await expect(page.getByTestId("bar-picture")).toContainText("Sir is still painting");
+    const picture = page.getByTestId("bar-picture");
+    await expect(picture).toHaveAttribute("data-painted", "true");
+    await expect(picture).toHaveAttribute("alt", /Barowl/);
+    expect(await picture.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), "the image file loaded").toBe(true);
+    await expect(page.getByText("Sir is still painting")).toHaveCount(0);
   });
 
   test("after Check Out the counter is closed", async ({ api, page }) => {

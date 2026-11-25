@@ -1,5 +1,6 @@
 import { COMPANIES, FULL_POUCH, PLACES, ROOMS, TEST_SAGA } from "@utils/constants";
 import { expect, test } from "@fixtures/fixtures";
+import { FeastTabs } from "@pages/feast-tabs";
 import { errorOf, type Table, type TavernApi } from "@utils/tavern-api";
 
 // Barowl's Mead & Feast: tonight's companies, Select Table, full tables, joining a company (free, one per saga, a
@@ -215,6 +216,52 @@ test.describe("Barowl", () => {
     await feast.goto();
     await feast.barowl.click();
     await expect(page).toHaveURL(/\/feast\/bar$/);
+  });
+});
+
+test.describe("the Mead & Feast tabs", () => {
+  // Before 2026-11-25 the top menu only opened the tables; the Counter was behind Barowl's badge and the Menu appeared
+  // only once you had a table. Now every Mead & Feast page has the three tabs, the current one marked.
+  const places = [
+    { url: "/feast", current: "tables" },
+    { url: "/feast/menu", current: "menu" },
+    { url: "/feast/menu/roast-bird", current: "menu" }, // a dish page belongs to the Menu
+    { url: "/feast/bar", current: "counter" },
+  ] as const;
+  for (const p of places) {
+    test(`on ${p.url} all three tabs are there and "${p.current}" is the current one`, async ({ page }) => {
+      const tabs = new FeastTabs(page);
+      await page.goto(p.url);
+      for (const name of ["tables", "menu", "counter"] as const) {
+        await expect(tabs[name]).toBeVisible();
+        if (name === p.current) await expect(tabs[name]).toHaveAttribute("aria-current", "page");
+        else await expect(tabs[name]).not.toHaveAttribute("aria-current");
+      }
+    });
+  }
+
+  test("without a table the Menu is one click away, before Go to Menu appears in the hall", async ({ feast, page }) => {
+    const tabs = new FeastTabs(page);
+    await feast.goto();
+    await expect(page.getByTestId("go-to-menu")).toHaveCount(0);
+    await tabs.menu.click();
+    await expect(page).toHaveURL(/\/feast\/menu$/);
+    await expect(page.getByTestId("menu-order-note")).toHaveAttribute("data-state", "needs-table");
+  });
+
+  test.describe("on a phone", () => {
+    test.use({ viewport: { width: 390, height: 844 } });
+
+    test("the three short names fit on one row", async ({ page }) => {
+      const tabs = new FeastTabs(page);
+      await page.goto("/feast");
+      // Renamed on 2026-11-25 from "The Tables · Barowl's Menu · Barowl's Counter"; the test IDs stayed the same.
+      await expect(tabs.tables).toHaveText("Feast Hall");
+      await expect(tabs.menu).toHaveText("Menu");
+      await expect(tabs.counter).toHaveText("Bar");
+      const tops = await Promise.all([tabs.tables, tabs.menu, tabs.counter].map(async (t) => (await t.boundingBox())!.y));
+      expect(new Set(tops).size, "all three tabs on the same row").toBe(1);
+    });
   });
 });
 

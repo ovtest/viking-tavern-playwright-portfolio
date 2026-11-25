@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { FeastTabs } from "@pages/feast-tabs";
 import { Header } from "@pages/header";
 
 // Quick "is the tavern alive?" checks. They don't change any data, so they use plain Playwright (no fresh night).
@@ -53,6 +54,24 @@ test("Barowl's Counter opens with Barowl's greeting and the drinks @smoke", asyn
   await page.goto("/feast/bar");
   await expect(page.getByTestId("bar-greeting")).toBeVisible();
   await expect(page.getByTestId("bar-drinks")).toBeVisible();
+});
+
+test("the Mead & Feast tabs lead to the tables, Barowl's Menu and his Counter @smoke", async ({ page }) => {
+  const tabs = new FeastTabs(page);
+  await page.goto("/feast");
+  await tabs.menu.click();
+  await expect(page.getByTestId("menu-page")).toBeVisible();
+  await tabs.counter.click();
+  await expect(page.getByTestId("bar-page")).toBeVisible();
+  await tabs.tables.click();
+  await expect(page.getByTestId("feast-scene")).toBeVisible();
+});
+
+test("the top menu's Sagas opens the tales, with at least one saga @smoke", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("nav-sagas").click();
+  await expect(page).toHaveURL(/\/sagas$/);
+  await expect(page.getByTestId("sagas-list").locator(":scope > li").first()).toBeVisible();
 });
 
 test("unknown pages answer 404 with the Lost at Sea page @smoke", async ({ page }) => {

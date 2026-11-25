@@ -1,7 +1,7 @@
-import { FULL_POUCH, ROOMS, TEST_SAGA } from "../src/constants";
-import { expect, test } from "../src/fixtures";
-import { DishPage } from "../src/pages/menu-page";
-import { errorOf, type TavernApi } from "../src/tavern-api";
+import { FULL_POUCH, ROOMS, TEST_SAGA } from "@utils/constants";
+import { expect, test } from "@fixtures/fixtures";
+import { DishPage } from "@pages/menu.page";
+import { errorOf, type TavernApi } from "@utils/tavern-api";
 
 // Barowl's Menu (/feast/menu and /feast/menu/<dish>): anyone can read it, but you eat where you sit, so ordering
 // needs a table. Dishes and drinks go in the Loot Sack, 1–10 of each, and are paid with the room.

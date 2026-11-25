@@ -1,6 +1,6 @@
-import { FULL_POUCH, ROOMS, TEST_SAGA } from "../src/constants";
-import { expect, test } from "../src/fixtures";
-import { errorOf, type Night, type TavernApi } from "../src/tavern-api";
+import { FULL_POUCH, ROOMS, TEST_SAGA } from "@utils/constants";
+import { expect, test } from "@fixtures/fixtures";
+import { errorOf, type Night, type TavernApi } from "@utils/tavern-api";
 
 // Morning Check Out: what happened during the night, refunds and charges, the pirates' boat swap, and the saga closing.
 // The Master's Table forces each event (rooms / harbor / tables: always or never), so every test knows what to expect.

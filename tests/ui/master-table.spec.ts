@@ -1,7 +1,7 @@
-import { FULL_POUCH, TEST_SAGA } from "../src/constants";
-import { expect, test } from "../src/fixtures";
-import { errorOf } from "../src/tavern-api";
-import { MasterPage } from "../src/pages/master-page";
+import { FULL_POUCH, TEST_SAGA } from "@utils/constants";
+import { expect, test } from "@fixtures/fixtures";
+import { errorOf } from "@utils/tavern-api";
+import { MasterPage } from "@pages/master.page";
 
 // The Master's Table (/master): the testers' own page for forcing a night. See the app's docs/SPEC.md, section 4.
 

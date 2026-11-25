@@ -7,7 +7,13 @@
     "noEmit": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": ["node"],
+    // Short imports instead of ../../ paths (Playwright reads these too)
+    "paths": {
+      "@pages/*": ["./pages/*"],
+      "@fixtures/*": ["./fixtures/*"],
+      "@utils/*": ["./utils/*"]
+    }
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "playwright-report", "test-results"]

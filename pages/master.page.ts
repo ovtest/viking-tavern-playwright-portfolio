@@ -16,6 +16,8 @@ export class MasterPage {
   readonly silver: Locator;
   readonly begin: Locator;
   readonly error: Locator;
+  /** The link to the API guide, under the form. */
+  readonly apiGuide: Locator;
 
   constructor(private readonly page: Page) {
     this.header = new Header(page);
@@ -27,6 +29,7 @@ export class MasterPage {
     this.silver = page.getByTestId("master-silver");
     this.begin = page.getByTestId("master-begin");
     this.error = page.getByTestId("master-error");
+    this.apiGuide = page.getByTestId("master-api-guide");
   }
 
   async goto() {

@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { FeastTabs } from "@pages/feast-tabs";
+import { ApiGuidePage } from "@pages/api-guide.page";
 import { Header } from "@pages/header";
+import { MasterPage } from "@pages/master.page";
 
 // Quick "is the tavern alive?" checks. They don't change any data, so they use plain Playwright (no fresh night).
 
@@ -72,6 +74,25 @@ test("the top menu's Sagas opens the tales, with at least one saga @smoke", asyn
   await page.getByTestId("nav-sagas").click();
   await expect(page).toHaveURL(/\/sagas$/);
   await expect(page.getByTestId("sagas-list").locator(":scope > li").first()).toBeVisible();
+});
+
+test("the API guide opens from the Master's Table, with the Master's call first @smoke", async ({ page }) => {
+  const master = new MasterPage(page);
+  const guide = new ApiGuidePage(page);
+  await master.goto();
+  await master.apiGuide.click();
+  await expect(page).toHaveURL(/\/api-guide$/);
+  await expect(guide.title).toHaveText("API guide");
+  await expect(guide.endpoints.first()).toHaveAttribute("data-path", "/api/saga/new");
+});
+
+test("the OpenAPI file for Postman is valid JSON with the tavern's calls @smoke", async ({ request }) => {
+  const res = await request.get("/api/openapi.json");
+  expect(res.status()).toBe(200);
+  const doc = await res.json();
+  expect(doc.openapi).toMatch(/^3\./);
+  expect(doc.paths["/api/saga/new"].post).toBeDefined();
+  expect(doc.paths["/api/health"].get).toBeDefined();
 });
 
 test("unknown pages answer 404 with the Lost at Sea page @smoke", async ({ page }) => {

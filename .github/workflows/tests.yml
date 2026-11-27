@@ -1,0 +1,108 @@
+# Runs the tests against the live tavern (http://fjords.oldbeaver.com:3102) and publishes the HTML report.
+#
+#   - on every push to main: the whole suite
+#   - every evening: the quick @smoke checks (the tavern runs on Lady Owner's computer, so a run while it sleeps fails)
+#   - by hand: Actions → "Tests against the live tavern" → Run workflow (choose smoke or all, and the address)
+#
+# Needs one repository secret: VIKING_NAME, a Viking sworn in on the tavern by hand (Settings → Secrets and
+# variables → Actions). In a fork, add your own Viking's name the same way.
+# The report goes to GitHub Pages in this repository (Settings → Pages → Source: GitHub Actions); in a fork it is
+# kept as a downloadable artifact of the run instead.
+name: Tests against the live tavern
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 2 * * *" # 02:00 UTC = 18:00 in California (19:00 in summer)
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "Which tests"
+        type: choice
+        options: [smoke, all]
+        default: smoke
+      base_url:
+        description: "The tavern's address"
+        default: "http://fjords.oldbeaver.com:3102"
+
+# All runs use one Viking, so two runs at once would spoil each other's night: they wait in line.
+concurrency:
+  group: live-tavern
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CI: "true"
+      BASE_URL: ${{ inputs.base_url || 'http://fjords.oldbeaver.com:3102' }}
+      VIKING_NAME: ${{ secrets.VIKING_NAME }}
+      SUITE: ${{ inputs.suite || (github.event_name == 'schedule' && 'smoke') || 'all' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Check the settings
+        run: |
+          if [ -z "$VIKING_NAME" ]; then
+            echo "::error::The secret VIKING_NAME is missing. Swear the oath on $BASE_URL, then add your Viking's name under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          echo "Tavern: $BASE_URL   Tests: $SUITE"
+
+      - name: Is the tavern open?
+        run: |
+          if ! curl -fsS --max-time 20 --retry 3 --retry-delay 10 --retry-all-errors "$BASE_URL/api/health"; then
+            echo "::error::The tavern at $BASE_URL doesn't answer. It runs on Lady Owner's computer, which may be asleep. Try again later."
+            exit 1
+          fi
+
+      - run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run the tests
+        run: |
+          if [ "$SUITE" = "smoke" ]; then npx playwright test --grep @smoke; else npx playwright test; fi
+
+      - name: Keep the report with the run
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+      # Only in this repository, only from main, and only when the tests ran (a closed tavern leaves no report).
+      - name: Prepare the report for GitHub Pages
+        id: pages
+        if: ${{ !cancelled() && github.repository == 'ovtest/viking-tavern-playwright-portfolio' && github.ref == 'refs/heads/main' && hashFiles('playwright-report/index.html') != '' }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: playwright-report/
+    outputs:
+      publish: ${{ steps.pages.outcome == 'success' }}
+
+  report:
+    needs: test
+    if: ${{ !cancelled() && needs.test.outputs.publish == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

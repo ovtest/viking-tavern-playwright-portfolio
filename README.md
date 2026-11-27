@@ -1,9 +1,17 @@
 # Lords of Fjords — sample Playwright tests
 
+[![Tests against the live tavern](https://github.com/ovtest/viking-tavern-playwright-portfolio/actions/workflows/tests.yml/badge.svg)](https://github.com/ovtest/viking-tavern-playwright-portfolio/actions/workflows/tests.yml)
+
 A starter test suite for **Lords of Fjords**, a pretend Viking tavern built for practising manual and automated testing:
 book a room in the Great Hall, moor your boat at the Drakkar Harbor, join a company in Barowl's Mead & Feast, pay, and
 hear at Morning Check Out what happened during the night. Copy it, run it, add your own tests and try to break the
 tavern.
+
+- **The live tavern:** [http://fjords.oldbeaver.com:3102](http://fjords.oldbeaver.com:3102) (plain http; it runs on
+  its owner's computer, so now and then it's asleep)
+- **The latest test run:** [the Playwright report](https://ovtest.github.io/viking-tavern-playwright-portfolio/), every
+  test with its steps and timing. GitHub Actions runs the whole suite on every change and the `@smoke` checks every
+  evening.
 
 ## What's inside
 The usual Playwright layout: tests in `tests/`, page objects in `pages/`, fixtures in `fixtures/`, helpers in `utils/`.
@@ -53,25 +61,36 @@ amount. `api.beginSaga({ seed, places, rooms, harbor, tables, silver })` in `uti
 ## Set up
 Needs Node.js 20 or newer.
 
-1. **Swear the Oath once by hand** on the tavern's Swear the Oath page and pick a Viking name. The tests never swear the
-   oath themselves: the tavern has room for 50 Vikings.
+1. **Swear the Oath once by hand** on the [live tavern](http://fjords.oldbeaver.com:3102) (Swear the Oath, top right)
+   and pick a Viking name. Every tester needs their **own** Viking: the tests begin sagas, book rooms and refill the
+   pouch, so two people sharing one would spoil each other's runs. The tests never swear the oath themselves: the
+   tavern has room for 50 Vikings.
 2. Copy `.env.example` to `.env` and fill in the tavern's address and your Viking's name:
    ```
-   BASE_URL=http://localhost:3100
+   BASE_URL=http://fjords.oldbeaver.com:3102
    VIKING_NAME=YourName
    ```
-3. Install and run:
+3. Install and run, the quick checks first:
    ```bash
    npm install
    npx playwright install chromium
+   npm run test:smoke
    npm test
    ```
+
+### Or on GitHub Actions, without installing anything
+1. **Fork** this repository (Fork, top right).
+2. In your fork: **Settings → Secrets and variables → Actions → New repository secret**, name `VIKING_NAME`, value
+   your Viking's name (step 1 above).
+3. **Actions** → enable workflows → **Tests against the live tavern** → **Run workflow**, choose `smoke` or `all`.
+   The report is kept with the run (Artifacts → `playwright-report`; unzip it and open `index.html`).
 
 Other commands:
 
 | Command | What it does |
 |---|---|
 | `npm run test:smoke` | Only the quick `@smoke` checks |
+| `npm run test:prod` | The suite against the live tavern, whatever `BASE_URL` says (`npm run test:prod -- --grep @smoke` for the quick checks). `PROD_URL` and `PROD_VIKING_NAME` in `.env` change its address or Viking |
 | `npm run test:ui` | Playwright's UI mode: pick tests, watch them run, time-travel through steps |
 | `npm run test:headed` | Run with a visible browser |
 | `npm run report` | Open the HTML report of the last run |
@@ -90,8 +109,8 @@ Other commands:
   is kept hidden in the HTML. A locator such as `getByTestId("page-title")` can then match two elements; prefer role
   locators or add `.filter({ visible: true })`.
 - **Money is whole silver coins.** A new Viking has 100 silver; the Jarl's treasury tops the pouch up to 100.
-- **The weekly cleanup sends all Vikings home** (Sunday 00:00 UTC). If the setup says it can't enter the hall, swear
-  the oath again.
+- **The tavern is emptied now and then** (a cleanup sends all Vikings home). If the setup says it can't enter the hall,
+  swear the oath again.
 - **Please keep runs gentle** when the tavern is shared: run the suite now and then, not in a tight loop.
 
 ## Report a bug
